@@ -40,7 +40,7 @@ Because this extension isn't in the official web stores yet, you'll need to inst
 
 ### 📱 Firefox Nightly (Android)
 *Note: Firefox for Android requires the packed `.xpi` file.*
-1. Download the `.xpi` file to your Android device's storage.
+1. Download the `Extension.xpi` file to your Android device's storage.
 2. Open Firefox Nightly and tap the three-dot menu (⋮), then select **Settings**.
 3. Scroll down and tap **About Firefox Nightly**.
 4. Tap the Firefox logo at the top **5 times** in quick succession. A toast notification will say "Debug menu enabled."
