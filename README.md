@@ -1,4 +1,4 @@
-# ✦ Gemini Form Solver 🤖
+# ✦ AI Form Solver 🤖
 
 > **Pura 20 mein 20.** > An intelligent, stealthy browser extension that automatically analyzes and solves Google Forms using the power of Google's Gemini AI.
 
@@ -38,15 +38,6 @@ Because this extension isn't in the official web stores yet, you'll need to inst
 5. Select the extracted folder containing the `manifest.json` file.
 6. *Done!* The extension icon (✦) will appear in your toolbar.
 
-### 🦊 Firefox Nightly (Desktop)
-*Note: Firefox requires extensions to be packed as `.xpi` files.*
-1. Ensure you have the compiled `.xpi` file for the extension.
-2. Open Firefox Nightly and type `about:config` in the URL bar. Accept the risk warning if prompted.
-3. Search for `xpinstall.signatures.required` and double-click it to set the value to **false** (this allows unsigned extensions).
-4. Type `about:addons` in the URL bar to open the Add-ons Manager.
-5. Click the **Gear icon** (⚙️) next to the "Manage Your Extensions" heading, and select **Install Add-on From File...**
-6. Select your `.xpi` file and click **Add** when prompted. 
-
 ### 📱 Firefox Nightly (Android)
 *Note: Firefox for Android requires the packed `.xpi` file.*
 1. Download the `.xpi` file to your Android device's storage.
@@ -57,19 +48,12 @@ Because this extension isn't in the official web stores yet, you'll need to inst
 6. Scroll down to the Advanced section and tap **Install Extension from File**.
 7. Locate and select the `.xpi` file from your device. Tap **Add** to confirm.
 
-### 🥝 Kiwi Browser (Alternative for Android)
-1. Download the extension source code `.zip` file to your Android device.
-2. Open Kiwi Browser, tap the three dots menu (⋮), and select **Extensions**.
-3. Toggle **Developer mode** to **ON**.
-4. Tap **+(from .zip/.crx/.user.js)**.
-5. Grant file permissions if asked, and select the `.zip` file from your device.
-
 ---
 
 ## 🕹️ How to Use
 
 1. Navigate to any active **Google Form** (`docs.google.com/forms/...`).
-2. Click the **✦ Gemini Form Solver** icon in your browser toolbar (or from the menu on mobile).
+2. Click the **✦ Form Solver** icon in your browser toolbar (or from the menu on mobile).
 3. Click the **Auto-Solve Form** button in the popup panel.
 4. Wait a few seconds while the UI says "Analyzing Form...".
 5. Watch the magic happen! The extension will silently select the correct options, type out text answers, and inject stealth hints for you to review.
