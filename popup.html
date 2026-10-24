@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Solver AI</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(22, 30, 46, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(13, 19, 33, 0.85);
+      --input-border: rgba(56, 189, 248, 0.25);
+      --input-focus: #38bdf8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --primary-glow: rgba(56, 189, 248, 0.25);
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.1);
+      --warning-border: rgba(245, 158, 11, 0.25);
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --danger-border: rgba(239, 68, 68, 0.25);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 65%);
+      color: var(--text-main);
+      padding: 16px;
+      user-select: none;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .logo-badge svg {
+      width: 18px;
+      height: 18px;
+      fill: #ffffff;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .status-pill {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-pill.ready {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pill.needs-key {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* API Key Section - Input State */
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .api-input {
+      width: 100%;
+      padding: 9px 34px 9px 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .api-input:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .api-input::placeholder {
+      color: var(--text-muted);
+      font-family: inherit;
+    }
+
+    .btn-toggle-vis {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .btn-toggle-vis:hover {
+      color: var(--text-main);
+    }
+
+    .btn-toggle-vis svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .key-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .link-generate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .link-generate:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    .link-generate svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .btn-save-key {
+      padding: 6px 14px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-save-key:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    /* API Key Section - Configured State */
+    .key-saved-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--input-bg);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+    }
+
+    .key-masked-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .key-status-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    .masked-key-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-clear-key {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-clear-key:hover {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn-clear-key svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Warning Card for Clearing Key */
+    .warning-card {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      margin-top: 8px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .warning-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #fca5a5;
+      margin-bottom: 4px;
+    }
+
+    .warning-header svg {
+      width: 14px;
+      height: 14px;
+      color: var(--danger);
+      flex-shrink: 0;
+    }
+
+    .warning-desc {
+      font-size: 11px;
+      color: #cbd5e1;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    .warning-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn-warning-cancel {
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-warning-cancel:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+    }
+
+    .btn-warning-confirm {
+      padding: 4px 10px;
+      background: var(--danger);
+      border: none;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-warning-confirm:hover {
+      background: var(--danger-hover);
+    }
+
+    /* Form Solve Action */
+    .btn-solve {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-solve:hover:not(:disabled) {
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-solve:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-solve:disabled {
+      background: #1e293b;
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .solve-sparkle {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.75s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Status Output Panel */
+    .status-panel {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      line-height: 1.4;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .status-panel.loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+    }
+
+    .status-panel.success {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+    }
+
+    .status-panel.error {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: #fca5a5;
+    }
+
+    .status-icon-svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Small Notification Toast */
+    .feedback-msg {
+      font-size: 11px;
+      margin-top: 6px;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    .feedback-msg.error {
+      color: #f87171;
+      display: block;
+    }
+    .feedback-msg.success {
+      color: #34d399;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 2L14.4 7.2L20 8.4L16 12.6L17 18.2L12 15.4L7 18.2L8 12.6L4 8.4L9.6 7.2L12 2Z"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">Form Solver AI</div>
+        <div class="brand-tagline">Use At Your Own Risk </div>
+      </div>
+    </div>
+    <div id="statusPill" class="status-pill needs-key">
+      <div class="status-dot"></div>
+      <span id="statusPillText">No Key</span>
+    </div>
+  </div>
+
+  <!-- API Key Management Card -->
+  <div class="card">
+    <div class="card-label">
+      <span>Gemini API Key</span>
+      <a id="getApiKeyLink" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="link-generate">
+        Get Key
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+    </div>
+
+    <!-- State A: Input form when key is not configured -->
+    <div id="keyInputSection">
+      <div class="input-group">
+        <input 
+          id="apiKeyInput" 
+          type="password" 
+          class="api-input" 
+          placeholder="Paste AIzaSy... key here" 
+          autocomplete="off" 
+          spellcheck="false"
+        />
+        <button id="toggleVisibilityBtn" type="button" class="btn-toggle-vis" title="Show / Hide Key">
+          <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="key-actions-row">
+        <span style="font-size: 10.5px; color: var(--text-muted);">Stored securely on device</span>
+        <button id="saveKeyBtn" type="button" class="btn-save-key">Save Key</button>
+      </div>
+      <div id="keyFeedback" class="feedback-msg"></div>
+    </div>
+
+    <!-- State B: Display when key is already configured -->
+    <div id="keyConfiguredSection" class="hidden">
+      <div class="key-saved-box">
+        <div class="key-masked-wrapper">
+          <svg class="key-status-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          <span id="maskedKeyDisplay" class="masked-key-text">AIzaSy••••••••••</span>
+        </div>
+        <button id="requestClearBtn" type="button" class="btn-clear-key" title="Remove saved API key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Clear Confirmation Warning Box -->
+    <div id="clearWarningCard" class="warning-card hidden">
+      <div class="warning-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Clear saved API key?</span>
+      </div>
+      <div class="warning-desc">
+        Auto-solve will be disabled until you enter a new key. Are you sure you want to remove it?
+      </div>
+      <div class="warning-buttons">
+        <button id="cancelClearBtn" type="button" class="btn-warning-cancel">Cancel</button>
+        <button id="confirmClearBtn" type="button" class="btn-warning-confirm">Yes, Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Action Section -->
+  <button id="solveBtn" class="btn-solve">
+    <div id="btnSpinner" class="spinner"></div>
+    <svg id="btnSparkle" class="solve-sparkle" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2L14.4 7.2L20 8.4L16 12.6L17 18.2L12 15.4L7 18.2L8 12.6L4 8.4L9.6 7.2L12 2Z"/>
+    </svg>
+    <span id="btnText">Auto-Solve Form</span>
+  </button>
+
+  <!-- Status / Results Panel -->
+  <div id="statusPanel" class="status-panel">
+    <svg id="statusIcon" class="status-icon-svg" viewBox="0 0 20 20" fill="currentColor"></svg>
+    <span id="statusText"></span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

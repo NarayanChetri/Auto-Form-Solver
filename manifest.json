@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Form Solver",
+  "version": "5.0",
+  "description": "Automatically answers Google Forms using the AI.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "*://docs.google.com/forms/*",
+    "*://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://docs.google.com/forms/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "form-solver-v5@narayanchetri.dev",
+      "strict_min_version": "109.0"
+    }
+  }
+}
